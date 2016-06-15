@@ -76,7 +76,7 @@ class JSONTypeTests: XCTestCase {
                 .Dictionary([ "children": .Array([ .String("a string") ]) ]),
                 .Dictionary([ "children": .Array([ .String("\u{00E9}"), .String("\u{00E9}") ]) ]),
                 .Dictionary([ "children": .Array([ .String("\u{1F419}"), .String("\u{1F419}") ]) ]),
-                .Dictionary([ "children": .Array([ .Double(42.0), .Int(65535), .Bool(true), .Null ]) ])
+                .Dictionary([ "children": .Array([ .Double(42.0), .Int(65535), .Bool(true), .null ]) ])
             ])
         ])
         

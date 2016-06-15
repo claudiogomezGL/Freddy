@@ -13,7 +13,7 @@ class JSONSubscriptingTests: XCTestCase {
     
     private var residentJSON: JSON!
     private var json: JSON!
-    private var noWhiteSpaceData: NSData!
+    private var noWhiteSpaceData: Data!
     
     func parser() -> JSONParserType.Type {
         return JSONParser.self
@@ -24,19 +24,19 @@ class JSONSubscriptingTests: XCTestCase {
         
         residentJSON = JSON.Dictionary([
             "residents": [
-                ["name": "Matt", "age": 33, "hasPet": false, "rent": .Null],
+                ["name": "Matt", "age": 33, "hasPet": false, "rent": .null],
                 ["name": "Drew", "hasPet": true, "rent": 1234.5],
-                ["name": "Pat", "age": 28, "hasPet": .Null]
+                ["name": "Pat", "age": 28, "hasPet": .null]
             ],
             "residentsByName": [
-                "Matt": ["name": "Matt", "age": 33, "hasPet": false, "rent": .Null],
+                "Matt": ["name": "Matt", "age": 33, "hasPet": false, "rent": .null],
                 "Drew": ["name": "Drew", "hasPet": true, "rent": 1234.5],
-                "Pat": ["name": "Pat", "age": 28, "hasPet": .Null]
+                "Pat": ["name": "Pat", "age": 28, "hasPet": .null]
             ]
             ])
         
-        let testBundle = NSBundle(forClass: JSONSubscriptingTests.self)
-        guard let data = testBundle.URLForResource("sample", withExtension: "JSON").flatMap(NSData.init) else {
+        let testBundle = Bundle(for: JSONSubscriptingTests.self)
+        guard let data = testBundle.urlForResource("sample", withExtension: "JSON").flatMap(Data.`init`(contentsOf:)) else {
             XCTFail("Could not read sample data from test bundle")
             return
         }
@@ -48,7 +48,7 @@ class JSONSubscriptingTests: XCTestCase {
             return
         }
         
-        guard let noWhiteSpaceData = testBundle.URLForResource("sampleNoWhiteSpace", withExtension: "JSON").flatMap(NSData.init) else {
+        guard let noWhiteSpaceData = testBundle.urlForResource("sampleNoWhiteSpace", withExtension: "JSON").flatMap(Data.`init`(contentsOf:)) else {
             XCTFail("Could not read sample data (no whitespace) from test bundle")
             return
         }
@@ -138,7 +138,7 @@ class JSONSubscriptingTests: XCTestCase {
     }
     
     func testArrayOfJSONIntAndNullCreatesOptionalWhenDetectNull() {
-        let testJSON: JSON = [1,2,.Null,4]
+        let testJSON: JSON = [1,2,.null,4]
         do {
             _ = try testJSON.arrayOf(alongPath: .NullBecomesNil, type: Int.self)
             XCTFail("`testJSON.arrayOf(_:options:type:)` should throw.")
@@ -150,7 +150,7 @@ class JSONSubscriptingTests: XCTestCase {
     }
 
     func testArrayProducesOptionalWhenNotFoundOrNull() {
-        let testJSON: JSON = ["integers": .Null]
+        let testJSON: JSON = ["integers": .null]
         do {
             let test1 = try testJSON.array("integers", alongPath: .NullBecomesNil)
             let test2 = try testJSON.array("residents", alongPath: .MissingKeyBecomesNil)
@@ -162,7 +162,7 @@ class JSONSubscriptingTests: XCTestCase {
     }
     
     func testDictionaryOfJSONIntAndNullCreatesOptionalWhenDetectNull() {
-        let testJSON: JSON = ["one": 1, "two": 2, "three": .Null, "four": 4]
+        let testJSON: JSON = ["one": 1, "two": 2, "three": .null, "four": 4]
         do {
             _ = try testJSON.dictionaryOf(alongPath: .NullBecomesNil, type: Int.self)
             XCTFail("`testJSON.dictionaryOf(_:options:type:)` should throw.")
@@ -174,7 +174,7 @@ class JSONSubscriptingTests: XCTestCase {
     }
     
     func testDictionaryProducesOptionalWhenNotFoundOrNull() {
-        let testJSON: JSON = ["integers": .Null]
+        let testJSON: JSON = ["integers": .null]
         do {
             let test1 = try testJSON.dictionary("integers", alongPath: .NullBecomesNil)
             let test2 = try testJSON.dictionary("residents", alongPath: .MissingKeyBecomesNil)
@@ -189,7 +189,7 @@ class JSONSubscriptingTests: XCTestCase {
         do {
             _ = try residentJSON.decode(1, type: Resident.self)
             XCTFail("Should throw error.")
-        } catch JSON.Error.UnexpectedSubscript(type: let theType) {
+        } catch JSON.Freddy.Error.unexpectedSubscript(type: let theType) {
             XCTAssertTrue(theType is Int.Type)
         } catch {
             XCTFail("Didn't catch the right error: \(error).")
@@ -253,7 +253,7 @@ class JSONSubscriptingTests: XCTestCase {
 
     func testArrayOr() {
         do {
-            let testJSON: JSON = ["pets": .Null]
+            let testJSON: JSON = ["pets": .null]
             let defaultArrayOfJSON: [JSON] = ["Oink", "Snuggles"]
             let pets = try testJSON.array("pet", or: defaultArrayOfJSON)
             XCTAssertEqual(pets, defaultArrayOfJSON, "`pets` should equal the `defaultArrayOfJSON`.")
@@ -274,7 +274,7 @@ class JSONSubscriptingTests: XCTestCase {
     
     func testDictionaryOr() {
         do {
-            let jsonDict: [String: JSON] = ["name": "Matt", "age": 33, "hasPet": false, "rent": .Null]
+            let jsonDict: [String: JSON] = ["name": "Matt", "age": 33, "hasPet": false, "rent": .null]
             let mattOr = try residentJSON.dictionary("residents", 4, or: jsonDict)
             XCTAssertEqual(jsonDict, mattOr, "`jsonDict` should equal `mattOr`")
         } catch {
@@ -295,7 +295,7 @@ class JSONSubscriptingTests: XCTestCase {
     func testThatUnexpectedSubscriptIsThrown() {
         do {
             _ = try residentJSON.decode("residents", 1, "name", "initial", type: Resident.self)
-        } catch JSON.Error.UnexpectedSubscript(let type) {
+        } catch JSON.Freddy.Error.unexpectedSubscript(let type) {
             XCTAssert(type == Swift.String, "The dictionary at index 1 should not be subscriptable by: \(type).")
         } catch {
             XCTFail("This should not be: \(error).")
@@ -361,7 +361,7 @@ class JSONSubscriptingTests: XCTestCase {
     func testJSONErrorKeyNotFound() {
         do {
             _ = try json.array("peopl")
-        } catch JSON.Error.KeyNotFound(let key) {
+        } catch JSON.Freddy.Error.keyNotFound(let key) {
             XCTAssert(key == "peopl", "The error should be due to the key not being found.")
         } catch {
             XCTFail("The error should be due to the key not being found, but was: \(error).")
@@ -371,7 +371,7 @@ class JSONSubscriptingTests: XCTestCase {
     func testJSONErrorIndexOutOfBounds() {
         do {
             _ = try json.dictionary("people", 4)
-        } catch JSON.Error.IndexOutOfBounds(let index) {
+        } catch JSON.Freddy.Error.indexOutOfBounds(let index) {
             XCTAssert(index == 4, "The error should be due to the index being out of bounds.")
         } catch {
             XCTFail("The error should be due to the index being out of bounds, but was: \(error).")
@@ -392,7 +392,7 @@ class JSONSubscriptingTests: XCTestCase {
     func testJSONErrorUnexpectedSubscript() {
         do {
             _ = try json.string("people", "name")
-        } catch JSON.Error.UnexpectedSubscript(let type) {
+        } catch JSON.Freddy.Error.unexpectedSubscript(let type) {
             XCTAssert(type == Swift.String, "The error should be due the value not being subscriptable with string `String` case, but was \(type).")
         } catch {
             XCTFail("The error should be due to the `people` `Array` not being subscriptable with `String`s, but was: \(error).")
@@ -441,14 +441,14 @@ private func ==(lhs: Resident, rhs: Resident) -> Bool {
 class JSONSubscriptWithNSJSONTests: JSONSubscriptingTests {
     
     override func parser() -> JSONParserType.Type {
-        return NSJSONSerialization.self
+        return JSONSerialization.self
     }
     
 }
 
 // Just for syntax validation, not for execution or being counted for coverage.
 private func testUsage() {
-    let j = JSON.Null
+    let j = JSON.null
     
     _ = try? j.int()
     _ = try? j.int(alongPath: .MissingKeyBecomesNil)
