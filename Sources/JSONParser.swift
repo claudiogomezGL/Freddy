@@ -234,7 +234,7 @@ public struct JSONParser {
 
     private var stringDecodingBuffer = [UInt8]()
     private mutating func decodeString() throws -> JSON {
-        let start = loc
+        //let start = loc
         loc = (loc + 1)
         stringDecodingBuffer.removeAll(keepingCapacity: true)
         while loc < input.count {
