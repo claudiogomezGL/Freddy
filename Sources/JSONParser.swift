@@ -267,11 +267,15 @@ public struct JSONParser {
                 loc = (loc + 1)
                 stringDecodingBuffer.append(0)
 
-                guard let string = (stringDecodingBuffer.withUnsafeBufferPointer {
+//                guard let string = (stringDecodingBuffer.withUnsafeBufferPointer {
+//                    String(cString: UnsafePointer($0.baseAddress!))
+//                }) else {
+//                    throw Error.unicodeEscapeInvalid(offset: start)
+//                }
+
+                let string = (stringDecodingBuffer.withUnsafeBufferPointer {
                     String(cString: UnsafePointer($0.baseAddress!))
-                }) else {
-                    throw Error.unicodeEscapeInvalid(offset: start)
-                }
+                    })
 
                 return .String(string)
 
@@ -582,13 +586,17 @@ public struct JSONParser {
 
             case .done:
                 stringDecodingBuffer.append(0)
-                guard let string = (stringDecodingBuffer.withUnsafeBufferPointer {
+//                guard let string = (stringDecodingBuffer.withUnsafeBufferPointer {
+//                    String(cString: UnsafePointer($0.baseAddress!))
+//                }) else {
+//                    // Should never fail - any problems with the number string should
+//                    // result in thrown errors above
+//                    fatalError("Internal error: Invalid numeric string")
+//                }
+
+                let string = (stringDecodingBuffer.withUnsafeBufferPointer {
                     String(cString: UnsafePointer($0.baseAddress!))
-                }) else {
-                    // Should never fail - any problems with the number string should
-                    // result in thrown errors above
-                    fatalError("Internal error: Invalid numeric string")
-                }
+                    })
 
                 loc = parser.loc
                 return .String(string)
