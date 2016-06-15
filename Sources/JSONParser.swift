@@ -154,7 +154,7 @@ public struct JSONParser {
                 default:
                     break advancing
                 }
-            } catch let InternalError.NumberOverflow(offset: start) {
+            } catch let InternalError.numberOverflow(offset: start) {
                 return try decodeNumberAsString(start)
             }
         }
