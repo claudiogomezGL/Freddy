@@ -593,7 +593,7 @@ public struct JSONParser {
         }
     }
 
-    private func detectingFloatingPointErrors<T>(_ loc: Int, @noescape _ f: () throws -> T) throws -> T {
+    private func detectingFloatingPointErrors<T>(_ loc: Int, _ f: @noescape() throws -> T) throws -> T {
         let flags = FE_UNDERFLOW | FE_OVERFLOW
         feclearexcept(flags)
         let value = try f()
@@ -667,7 +667,7 @@ private struct NumberParser {
         state = .decimal
     }
 
-    mutating func parsePreDecimalDigits(@noescape f: (UInt8) throws -> Void) rethrows {
+    mutating func parsePreDecimalDigits( f: @noescape(UInt8) throws -> Void) rethrows {
         assert(state == .preDecimalDigits, "Unexpected state entering parsePreDecimalDigits")
         advancing: while loc < input.count {
             let c = input[loc]
@@ -708,7 +708,7 @@ private struct NumberParser {
         }
     }
 
-    mutating func parsePostDecimalDigits(@noescape f: (UInt8) throws -> Void) rethrows {
+    mutating func parsePostDecimalDigits( f: @noescape(UInt8) throws -> Void) rethrows {
         assert(state == .postDecimalDigits, "Unexpected state entering parsePostDecimalDigits")
 
         advancing: while loc < input.count {
@@ -772,7 +772,7 @@ private struct NumberParser {
         }
     }
 
-    mutating func parseExponentDigits(@noescape f: (UInt8) throws -> Void) rethrows {
+    mutating func parseExponentDigits( f: @noescape(UInt8) throws -> Void) rethrows {
         assert(state == .exponentDigits, "Unexpected state entering parseExponentDigits")
         advancing: while loc < input.count {
             let c = input[loc]

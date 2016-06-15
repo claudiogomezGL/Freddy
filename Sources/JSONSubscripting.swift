@@ -249,7 +249,7 @@ extension JSON {
         public static let MissingKeyBecomesNil = SubscriptingOptions(rawValue: 1 << 1)
     }
     
-    private func mapOptionalAtPath<Value>(_ path: [JSONPathType], alongPath: SubscriptingOptions, @noescape transform: (JSON) throws -> Value) throws -> Value? {
+    private func mapOptionalAtPath<Value>(_ path: [JSONPathType], alongPath: SubscriptingOptions, transform: @noescape(JSON) throws -> Value) throws -> Value? {
         let detectNull = alongPath.contains(.NullBecomesNil)
         let detectNotFound = alongPath.contains(.MissingKeyBecomesNil)
         var json: JSON?
@@ -447,7 +447,7 @@ extension JSON {
 
 extension JSON {
     
-    private func mapOptionalAtPath<Value>(_ path: [JSONPathType], @noescape fallback: () -> Value, @noescape transform: (JSON) throws -> Value) throws -> Value {
+    private func mapOptionalAtPath<Value>(_ path: [JSONPathType], fallback: @noescape() -> Value, transform: @noescape(JSON) throws -> Value) throws -> Value {
         return try mapOptionalAtPath(path, alongPath: .MissingKeyBecomesNil, transform: transform) ?? fallback()
     }
     
@@ -461,7 +461,7 @@ extension JSON {
     ///     corresponding `JSON` value.
     ///   * `TypeNotConvertible`: The target value's type inside of
     ///     the `JSON` instance does not match `Decoded`.
-    public func decode<Decoded: JSONDecodable>(_ path: JSONPathType..., @autoclosure or fallback: () -> Decoded) throws -> Decoded {
+    public func decode<Decoded: JSONDecodable>(_ path: JSONPathType..., or fallback: @autoclosure() -> Decoded) throws -> Decoded {
         return try mapOptionalAtPath(path, fallback: fallback, transform: Decoded.init)
     }
     
@@ -471,7 +471,7 @@ extension JSON {
     /// - returns: A floating-point `Double`
     /// - throws: One of the `JSON.Error` cases thrown by calling `mapOptionalAtPath(_:fallback:transform:)`.
     /// - seealso: `optionalAtPath(_:ifNotFound)`.
-    public func double(_ path: JSONPathType..., @autoclosure or fallback: () -> Swift.Double) throws -> Swift.Double {
+    public func double(_ path: JSONPathType..., or fallback: @autoclosure() -> Swift.Double) throws -> Swift.Double {
         return try mapOptionalAtPath(path, fallback: fallback, transform: Swift.Double.init)
     }
     
@@ -488,7 +488,7 @@ extension JSON {
     ///     corresponding `JSON` value.
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
-    public func int(_ path: JSONPathType..., @autoclosure or fallback: () -> Swift.Int) throws -> Swift.Int {
+    public func int(_ path: JSONPathType..., or fallback: @autoclosure() -> Swift.Int) throws -> Swift.Int {
         return try mapOptionalAtPath(path, fallback: fallback, transform: Swift.Int.init)
     }
     
@@ -505,7 +505,7 @@ extension JSON {
     ///     corresponding `JSON` value.
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
-    public func string(_ path: JSONPathType..., @autoclosure or fallback: () -> Swift.String) throws -> Swift.String {
+    public func string(_ path: JSONPathType..., or fallback: @autoclosure() -> Swift.String) throws -> Swift.String {
         return try mapOptionalAtPath(path, fallback: fallback, transform: Swift.String.init)
     }
     
@@ -522,7 +522,7 @@ extension JSON {
     ///     corresponding `JSON` value.
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
-    public func bool(_ path: JSONPathType..., @autoclosure or fallback: () -> Swift.Bool) throws -> Swift.Bool {
+    public func bool(_ path: JSONPathType..., or fallback: @autoclosure() -> Swift.Bool) throws -> Swift.Bool {
         return try mapOptionalAtPath(path, fallback: fallback, transform: Swift.Bool.init)
     }
     
@@ -539,7 +539,7 @@ extension JSON {
     ///     corresponding `JSON` value.
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
-    public func array(_ path: JSONPathType..., @autoclosure or fallback: () -> [JSON]) throws -> [JSON] {
+    public func array(_ path: JSONPathType..., or fallback: @autoclosure() -> [JSON]) throws -> [JSON] {
         return try mapOptionalAtPath(path, fallback: fallback, transform: JSON.getArray)
     }
     
@@ -558,7 +558,7 @@ extension JSON {
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
     ///   * Any error that arises from decoding the value.
-    public func arrayOf<Decoded: JSONDecodable>(_ path: JSONPathType..., @autoclosure or fallback: () -> [Decoded]) throws -> [Decoded] {
+    public func arrayOf<Decoded: JSONDecodable>(_ path: JSONPathType..., or fallback: @autoclosure() -> [Decoded]) throws -> [Decoded] {
         return try mapOptionalAtPath(path, fallback: fallback, transform: JSON.getArrayOf)
     }
     
@@ -576,7 +576,7 @@ extension JSON {
     ///     corresponding `JSON` value.
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
-    public func dictionary(_ path: JSONPathType..., @autoclosure or fallback: () -> [Swift.String: JSON]) throws -> [Swift.String: JSON] {
+    public func dictionary(_ path: JSONPathType..., or fallback: @autoclosure() -> [Swift.String: JSON]) throws -> [Swift.String: JSON] {
         return try mapOptionalAtPath(path, fallback: fallback, transform: JSON.getDictionary)
     }
     
@@ -595,7 +595,7 @@ extension JSON {
     ///   * `TypeNotConvertible`: The target value's type inside of the `JSON`
     ///     instance does not match the decoded value.
     ///   * Any error that arises from decoding the value.
-    public func dictionaryOf<Decoded: JSONDecodable>(_ path: JSONPathType..., @autoclosure or fallback: () -> [Swift.String: Decoded]) throws -> [Swift.String: Decoded] {
+    public func dictionaryOf<Decoded: JSONDecodable>(_ path: JSONPathType..., or fallback: @autoclosure() -> [Swift.String: Decoded]) throws -> [Swift.String: Decoded] {
         return try mapOptionalAtPath(path, fallback: fallback, transform: JSON.getDictionaryOf)
     }
     
