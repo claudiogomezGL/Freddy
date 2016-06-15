@@ -31,7 +31,8 @@ extension JSON {
 
     /// Create `JSON` from UTF-8 `string`.
     public init(jsonString: Swift.String, usingParser parser: JSONParserType.Type = JSONParser.self) throws {
-        self = try parser.createJSONFromData((jsonString as NSString).data(using: String.Encoding.utf8) ?? Data())
+        let encoding = (Swift.String).Encoding.utf8.rawValue
+        self = try parser.createJSONFromData((jsonString as NSString).data(using: encoding) ?? Data())
     }
 }
 
