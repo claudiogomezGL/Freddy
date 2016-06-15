@@ -175,8 +175,10 @@ public struct JSONParser {
     }
 
     private mutating func guardAgainstUnsupportedEncodings() throws {
-        let header = input.prefix(4)
-        let encodingPrefixInformation = JSONEncodingDetector.detectEncoding(header)
+       // let header = input.prefix(4)
+        //let encodingPrefixInformation = (JSONEncodingDetector.detectEncoding(header)
+        // force use of .utf8
+        let encodingPrefixInformation: JSONEncodingDetector.ByteStreamPrefixInformation = (.utf8, 0)
         guard JSONEncodingDetector.supportedEncodings.contains(encodingPrefixInformation.encoding) else {
             throw Error.invalidUnicodeStreamEncoding(detectedEncoding: encodingPrefixInformation.encoding)
         }
