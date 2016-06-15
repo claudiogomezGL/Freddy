@@ -184,7 +184,8 @@ public struct JSONParser {
     }
 
     private mutating func decodeNull() throws -> JSON {
-        guard loc.advancedBy(3, limit: input.count) != input.count else {
+        //guard loc.advancedBy(3, limit: input.count) != input.count else {
+        guard min(loc + 3, input.count) != input.count else {
             throw Error.literalNilMisspelled(offset: loc)
         }
 
@@ -199,7 +200,8 @@ public struct JSONParser {
     }
 
     private mutating func decodeTrue() throws -> JSON {
-        guard loc.advancedBy(3, limit: input.count) != input.count else {
+        //guard loc.advancedBy(3, limit: input.count) != input.count else {
+        guard min(loc + 3, input.count) != input.count else {
             throw Error.literalTrueMisspelled(offset: loc)
         }
 
@@ -214,7 +216,8 @@ public struct JSONParser {
     }
 
     private mutating func decodeFalse() throws -> JSON {
-        guard loc.advancedBy(4, limit: input.count) != input.count else {
+        //guard loc.advancedBy(4, limit: input.count) != input.count else {
+        guard min(loc + 4, input.count) != input.count else {
             throw Error.literalFalseMisspelled(offset: loc)
         }
 
