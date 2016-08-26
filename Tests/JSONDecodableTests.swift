@@ -52,7 +52,7 @@ class JSONDecodableTests: XCTestCase {
         do {
             _ = try Double(json: "bad")
             XCTFail("Should not be able to instantiate `Double` with `String` `JSON`.")
-        } catch JSON.Error.ValueNotConvertible(let type) {
+        } catch JSON.Error.valueNotConvertible(let type) {
             XCTAssert(true, "\(type) should not be covertible from 'bad' `String`.")
         } catch {
             XCTFail("Failed for unknown reason: \(error).")
@@ -76,7 +76,7 @@ class JSONDecodableTests: XCTestCase {
         do {
             _ = try Int(json: "bad")
             XCTFail("Should not be able to instantiate `Int` with `String` `JSON`.")
-        } catch JSON.Error.ValueNotConvertible(let type) {
+        } catch JSON.Error.valueNotConvertible(let type) {
             XCTAssert(true, "\(type) should not be covertible from 'bad' `String`.")
         } catch {
             XCTFail("Failed for unknown reason: \(error).")
@@ -95,10 +95,28 @@ class JSONDecodableTests: XCTestCase {
         }
         
         do {
-            _ = try String(json: 4)
-            XCTFail("Should not be able to instantiate `String` with `Int` `JSON`.")
-        } catch JSON.Error.ValueNotConvertible(let type) {
-            XCTAssert(true, "\(type) should not be covertible from 'bad' `Int.")
+            let four = try String(json: 4)
+            XCTAssertEqual(four, "4", "`four` and `4` should be equal.")
+        } catch JSON.Error.valueNotConvertible(let type) {
+            XCTAssert(true, "\(type) should be covertible from `Int.")
+        } catch {
+            XCTFail("Failed for unknown reason: \(error).")
+        }
+        
+        do {
+            let twoAndHalf = try String(json: 2.5)
+            XCTAssertEqual(twoAndHalf, "2.5", "`twoAndHalf` and `2.5` should be equal.")
+        } catch JSON.Error.valueNotConvertible(let type) {
+            XCTAssert(true, "\(type) should be covertible from `Double.")
+        } catch {
+            XCTFail("Failed for unknown reason: \(error).")
+        }
+        
+        do {
+            let positive = try String(json: true)
+            XCTAssertEqual(positive, "true", "`positive` and `true` should be equal.")
+        } catch JSON.Error.valueNotConvertible(let type) {
+            XCTAssert(true, "\(type) should be covertible from `Bool.")
         } catch {
             XCTFail("Failed for unknown reason: \(error).")
         }
@@ -118,7 +136,7 @@ class JSONDecodableTests: XCTestCase {
         do {
             _ = try Bool(json: "bad")
             XCTFail("Should not be able to instantiate `Bool` with `String` `JSON`.")
-        } catch JSON.Error.ValueNotConvertible(let type) {
+        } catch JSON.Error.valueNotConvertible(let type) {
             XCTAssert(true, "\(type) should not be covertible from 'bad' string.")
         } catch {
             XCTFail("Failed for unknown reason: \(error).")
@@ -149,7 +167,7 @@ class JSONDecodableTests: XCTestCase {
         do {
             _ = try badJSONArray.array()
             XCTFail("array should not exist.")
-        } catch JSON.Error.ValueNotConvertible(let type) {
+        } catch JSON.Error.valueNotConvertible(let type) {
             XCTAssert(true, "\(type) should not be convertible to `[JSON]`")
         } catch {
             XCTFail("Failed for unknown reason: \(error).")
@@ -170,7 +188,7 @@ class JSONDecodableTests: XCTestCase {
         do {
             _ = try badJSONDictionary.dictionary()
             XCTFail("There should be no dictionary.")
-        } catch JSON.Error.ValueNotConvertible(let type) {
+        } catch JSON.Error.valueNotConvertible(let type) {
             XCTAssertTrue(true, "\(type) shold not be convertible to `[String: JSON]`.")
         } catch {
             XCTFail("Failed for unknown reason: \(error).")
@@ -200,7 +218,7 @@ class JSONDecodableTests: XCTestCase {
     }
     
     func testThatNullIsDecodedToNilWhenRequestedAtTopLevel() {
-        let JSONDictionary: JSON = ["key": .Null]
+        let JSONDictionary: JSON = ["key": .null]
         
         do {
             let value: Int? = try JSONDictionary.int("key", alongPath: .NullBecomesNil)
@@ -211,12 +229,12 @@ class JSONDecodableTests: XCTestCase {
     }
     
     func testThatAttemptingToDecodeNullThrowsWhenRequestedAtTopLevel() {
-        let JSONDictionary: JSON = ["key": .Null]
+        let JSONDictionary: JSON = ["key": .null]
         
         do {
             let _: Int? = try JSONDictionary.int("key")
             XCTFail("Should have thrown an error when attempting to retrieve a value for key `key` in `JSONDictionary` when not specifying `ifNull` to be `true`.")
-        } catch let JSON.Error.ValueNotConvertible(_, to) where to == Int.self {
+        } catch let JSON.Error.valueNotConvertible(_, to) where to == Int.self {
             return
         } catch {
             XCTFail("An unexpected exception was thrown.")
