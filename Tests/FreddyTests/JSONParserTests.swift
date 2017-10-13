@@ -286,8 +286,13 @@ class JSONParserTests: XCTestCase {
             return
         }
 
-        XCTAssertEqual(try? json.getInt(at: "exceedsIntMax"), nil, "as int")
-        XCTAssertEqual(try? json.getDouble(at: "exceedsIntMax"), Double(anyValueExceedingIntMax), "as double")
+        // since iOS 11 is 64-bit, only run tests on iOS 10.x and earlier
+        if let systemVersion = Double(UIDevice.current.systemVersion) {
+            if systemVersion < 11.0 {
+                XCTAssertEqual(try? json.getInt(at: "exceedsIntMax"), nil, "as int")
+                XCTAssertEqual(try? json.getDouble(at: "exceedsIntMax"), Double(anyValueExceedingIntMax), "as double")
+            }
+        }
     }
 
     // This test should also be run on the iPhone 5 simulator to check 32-bit support.
