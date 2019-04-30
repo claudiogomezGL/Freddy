@@ -8,6 +8,7 @@
 
 import Foundation
 
+// https://mjtsai.com/blog/2019/03/27/swift-5-released/
 extension Data {
     func mjtWithUnsafePointer<ResultType>(_ body: (UnsafePointer<UInt8>) throws -> ResultType) rethrows -> ResultType {
         return try withUnsafeBytes { (rawBufferPointer: UnsafeRawBufferPointer) -> ResultType in
@@ -827,16 +828,16 @@ public extension JSONParser {
     /// Creates an instance of `JSON` from UTF-8 encoded `data`.
     static func parse(utf8 data: Data) throws -> JSON {
 
-//        return try data.mjtWithUnsafePointer { (ptr: UnsafePointer<UInt8>) -> JSON in
-//            let buffer = UnsafeBufferPointer<UInt8>(start: ptr, count: data.count)
-//            var parser = JSONParser(input: buffer)
-//            return try parser.parse()
-//        }
-        return try data.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) -> JSON in
-            let buffer = UnsafeBufferPointer(start: ptr, count: data.count)
+        return try data.mjtWithUnsafePointer { (ptr: UnsafePointer<UInt8>) -> JSON in
+            let buffer = UnsafeBufferPointer<UInt8>(start: ptr, count: data.count)
             var parser = JSONParser(input: buffer)
             return try parser.parse()
         }
+//        return try data.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) -> JSON in
+//            let buffer = UnsafeBufferPointer(start: ptr, count: data.count)
+//            var parser = JSONParser(input: buffer)
+//            return try parser.parse()
+//        }
     }
 
     /// Creates an instance of `JSON` from `string`.
