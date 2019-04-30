@@ -40,7 +40,7 @@ TVOS_DEPLOYMENT_TARGET = 9.0
 
 ENABLE_BITCODE = YES
 ENABLE_BITCODE[sdk=macosx*] = NO
-ENABLE_BITCODE[sdk=iphoneos*] = NO
+// ENABLE_BITCODE[sdk=iphoneos*] = NO
 
 CODE_SIGN_IDENTITY[sdk=macosx*] =
 CODE_SIGN_IDENTITY[sdk=iphoneos*] =
