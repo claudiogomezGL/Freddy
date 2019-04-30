@@ -8,6 +8,19 @@
 
 import Foundation
 
+extension Data {
+    func mjtWithUnsafePointer<ResultType>(_ body: (UnsafePointer<UInt8>) throws -> ResultType) rethrows -> ResultType {
+        return try withUnsafeBytes { (rawBufferPointer: UnsafeRawBufferPointer) -> ResultType in
+            let unsafeBufferPointer = rawBufferPointer.bindMemory(to: UInt8.self)
+            guard let unsafePointer = unsafeBufferPointer.baseAddress else {
+                var int: UInt8 = 0
+                return try body(&int)
+            }
+            return try body(unsafePointer)
+        }
+    }
+}
+
 private struct Literal {
     static let BACKSLASH     = UInt8(ascii: "\\")
     static let BACKSPACE     = UInt8(ascii: "\u{0008}")
@@ -813,6 +826,12 @@ public extension JSONParser {
 
     /// Creates an instance of `JSON` from UTF-8 encoded `data`.
     static func parse(utf8 data: Data) throws -> JSON {
+
+//        return try data.mjtWithUnsafePointer { (ptr: UnsafePointer<UInt8>) -> JSON in
+//            let buffer = UnsafeBufferPointer<UInt8>(start: ptr, count: data.count)
+//            var parser = JSONParser(input: buffer)
+//            return try parser.parse()
+//        }
         return try data.withUnsafeBytes { (ptr: UnsafePointer<UInt8>) -> JSON in
             let buffer = UnsafeBufferPointer(start: ptr, count: data.count)
             var parser = JSONParser(input: buffer)
